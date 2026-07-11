@@ -1,0 +1,16 @@
+{
+  "name": "email-cf-d1",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2024-01-01 --binding DB=d1:email-database",
+    "deploy": "wrangler pages deploy public",
+    "db:create": "wrangler d1 create email-database",
+    "db:init": "wrangler d1 execute email-database --file=./schema.sql",
+    "db:local": "wrangler d1 execute email-database --local --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "wrangler": "^3.57.1"
+  }
+}

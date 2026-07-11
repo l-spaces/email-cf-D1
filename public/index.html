@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f6f5">
+  <title>邮箱账号 | 凭据库</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/vendor/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">跳到主要内容</a>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand" aria-label="邮箱账号凭据库">
+          <span class="brand-mark" aria-hidden="true">
+            <i data-lucide="mail"></i>
+          </span>
+          <div class="brand-copy">
+            <p>凭据库</p>
+            <h1>邮箱账号</h1>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="sync-status" id="syncStatus" role="status" aria-live="polite">
+            <span class="sync-dot" aria-hidden="true"></span>
+            <span id="syncStatusText">正在连接</span>
+          </div>
+          <button id="addBtn" class="btn btn-primary" type="button" aria-label="添加邮箱" title="添加邮箱">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>添加邮箱</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="mainContent" class="main-content">
+      <section class="workspace" aria-labelledby="accountsHeading">
+        <div class="workspace-header">
+          <div class="workspace-title">
+            <h2 id="accountsHeading">账号列表</h2>
+            <p id="resultSummary" aria-live="polite">正在载入账号</p>
+          </div>
+
+          <div class="toolbar" role="search">
+            <div class="search-field">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <label class="sr-only" for="searchInput">搜索邮箱账号</label>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="搜索邮箱或备注"
+                autocomplete="off"
+                aria-controls="emailTable"
+              >
+              <button id="clearSearchBtn" class="search-clear" type="button" aria-label="清空搜索" hidden>
+                <i data-lucide="x" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <button id="refreshBtn" class="icon-btn toolbar-btn" type="button" aria-label="刷新账号列表" title="刷新">
+              <i data-lucide="refresh-cw" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-frame" id="tableFrame">
+          <table id="emailTable">
+            <caption class="sr-only">邮箱账号列表</caption>
+            <colgroup>
+              <col class="col-account">
+              <col class="col-password">
+              <col class="col-note">
+              <col class="col-date">
+              <col class="col-actions">
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">邮箱账号</th>
+                <th scope="col">密码</th>
+                <th scope="col">备注</th>
+                <th scope="col">创建时间</th>
+                <th scope="col" class="actions-heading"><span class="sr-only">操作</span></th>
+              </tr>
+            </thead>
+            <tbody id="emailTableBody">
+              <tr class="status-row">
+                <td colspan="5">
+                  <div class="loading-state" role="status">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>正在加载账号</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="emailDialog" class="dialog" aria-labelledby="modalTitle">
+    <div class="dialog-panel">
+      <header class="dialog-header">
+        <div>
+          <p id="modalMode" class="dialog-kicker">新账号</p>
+          <h2 id="modalTitle">添加邮箱</h2>
+        </div>
+        <button id="closeDialogBtn" class="icon-btn dialog-close" type="button" aria-label="关闭">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <form id="emailForm" autocomplete="off">
+        <div class="dialog-body">
+          <div id="formError" class="form-alert" role="alert" hidden></div>
+
+          <div class="form-group">
+            <label for="email">邮箱地址</label>
+            <div class="input-control">
+              <i data-lucide="at-sign" aria-hidden="true"></i>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="name@example.com"
+                maxlength="254"
+                autocomplete="username"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">密码</label>
+            <div class="input-control input-control-action">
+              <i data-lucide="key-round" aria-hidden="true"></i>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="输入账号密码"
+                maxlength="512"
+                autocomplete="new-password"
+                required
+              >
+              <button id="formPasswordToggle" class="input-action" type="button" aria-label="显示密码" title="显示密码">
+                <i data-lucide="eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="description">备注</label>
+              <span>选填</span>
+            </div>
+            <div class="input-control textarea-control">
+              <i data-lucide="align-left" aria-hidden="true"></i>
+              <textarea
+                id="description"
+                name="description"
+                rows="4"
+                maxlength="500"
+                placeholder="添加用途、归属或其他备注"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <footer class="dialog-actions">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <span class="button-spinner" aria-hidden="true" hidden></span>
+            <i data-lucide="save" aria-hidden="true"></i>
+            <span id="submitLabel">保存账号</span>
+          </button>
+        </footer>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="deleteDialog" class="dialog dialog-small" aria-labelledby="deleteDialogTitle">
+    <div class="dialog-panel">
+      <header class="dialog-header delete-header">
+        <span class="danger-mark" aria-hidden="true">
+          <i data-lucide="trash-2"></i>
+        </span>
+        <div class="delete-heading">
+          <p class="dialog-kicker">删除账号</p>
+          <h2 id="deleteDialogTitle">确认删除</h2>
+        </div>
+        <button id="closeDeleteDialogBtn" class="icon-btn dialog-close" type="button" aria-label="关闭">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="dialog-body delete-copy">
+        <p>将删除 <strong id="deleteEmail"></strong>。</p>
+        <p>此操作无法撤销。</p>
+      </div>
+
+      <footer class="dialog-actions">
+        <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">取消</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+          <span class="button-spinner" aria-hidden="true" hidden></span>
+          <i data-lucide="trash-2" aria-hidden="true"></i>
+          <span>删除账号</span>
+        </button>
+      </footer>
+    </div>
+  </dialog>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

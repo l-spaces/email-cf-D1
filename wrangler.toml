@@ -1,0 +1,12 @@
+name = "email-cf-d1"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "email-database"
+database_id = "your-database-id-here"
+
+[vars]
+# 生产环境的 API_KEY 请在 Cloudflare Dashboard 设置
+# 本地开发可以在 .dev.vars 文件中设置
