@@ -5,7 +5,7 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "email-database"
-database_id = "your-database-id-here"
+database_id = "c4b95d91-f3c6-4e5a-bf0d-67d03bb9bf6e"
 
 [vars]
 # 生产环境的 API_KEY 请在 Cloudflare Dashboard 设置
