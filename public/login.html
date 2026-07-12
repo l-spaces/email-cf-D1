@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f6f5">
+  <title>访问验证 | 邮箱账号</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/login.css">
+  <script src="/vendor/lucide.min.js" defer></script>
+  <script src="/login.js" defer></script>
+</head>
+<body>
+  <main class="login-page">
+    <div class="login-shell">
+      <header class="login-brand" aria-label="邮箱账号凭据库">
+        <span class="brand-mark" aria-hidden="true">
+          <i data-lucide="mail"></i>
+        </span>
+        <div>
+          <p>凭据库</p>
+          <h1>邮箱账号</h1>
+        </div>
+      </header>
+
+      <section class="login-panel" aria-labelledby="loginTitle">
+        <header class="login-heading">
+          <p>访问验证</p>
+          <h2 id="loginTitle">输入访问密码</h2>
+          <span>验证通过后进入系统。</span>
+        </header>
+
+        <form id="loginForm" autocomplete="on">
+          <div id="loginError" class="login-alert" role="alert" hidden></div>
+
+          <div class="form-group">
+            <label for="accessPassword">访问密码</label>
+            <div class="input-control">
+              <i data-lucide="key-round" aria-hidden="true"></i>
+              <input
+                id="accessPassword"
+                name="password"
+                type="password"
+                maxlength="512"
+                autocomplete="current-password"
+                aria-describedby="loginError"
+                placeholder="输入访问密码"
+                autofocus
+                required
+              >
+              <button id="passwordToggle" class="input-action" type="button" aria-label="显示密码" aria-pressed="false" title="显示密码">
+                <i data-lucide="eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <button id="loginBtn" class="login-button" type="submit">
+            <span class="button-spinner" aria-hidden="true" hidden></span>
+            <i data-lucide="log-in" aria-hidden="true"></i>
+            <span id="loginBtnText">进入系统</span>
+          </button>
+        </form>
+
+        <footer class="login-footer">
+          <i data-lucide="shield-check" aria-hidden="true"></i>
+          <span>仅限授权访问</span>
+        </footer>
+
+        <noscript>请启用 JavaScript 后继续。</noscript>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

@@ -11,6 +11,7 @@ const revealedPasswords = new Set();
 const emailDialog = document.getElementById('emailDialog');
 const deleteDialog = document.getElementById('deleteDialog');
 const addBtn = document.getElementById('addBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 const refreshBtn = document.getElementById('refreshBtn');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
 const searchInput = document.getElementById('searchInput');
@@ -43,6 +44,7 @@ function initialize() {
   refreshIcons();
 
   addBtn.addEventListener('click', () => openEditor());
+  logoutBtn.addEventListener('click', logout);
   refreshBtn.addEventListener('click', () => loadEmails({ announce: true }));
   clearSearchBtn.addEventListener('click', () => clearSearch());
   searchInput.addEventListener('input', handleSearch);
@@ -617,8 +619,13 @@ function restoreDialogFocus(dialog) {
 }
 
 async function requestJson(url, options = {}) {
-  const response = await fetch(url, options);
+  const response = await fetch(url, { credentials: 'same-origin', ...options });
   let result;
+
+  if (response.status === 401) {
+    redirectToLogin();
+    throw new Error('登录已过期');
+  }
 
   try {
     result = await response.json();
@@ -631,6 +638,40 @@ async function requestJson(url, options = {}) {
   }
 
   return result;
+}
+
+async function logout() {
+  if (logoutBtn.disabled) {
+    return;
+  }
+
+  logoutBtn.disabled = true;
+  logoutBtn.classList.add('is-loading');
+  setButtonIcon(logoutBtn, 'loader-circle');
+
+  try {
+    const response = await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'same-origin'
+    });
+
+    if (!response.ok) {
+      throw new Error('退出失败');
+    }
+
+    window.location.replace('/login');
+  } catch (error) {
+    logoutBtn.disabled = false;
+    logoutBtn.classList.remove('is-loading');
+    setButtonIcon(logoutBtn, 'log-out');
+    showToast('退出失败，请稍后重试', 'error');
+  }
+}
+
+function redirectToLogin() {
+  const loginUrl = new URL('/login', window.location.origin);
+  loginUrl.searchParams.set('next', `${window.location.pathname}${window.location.search}${window.location.hash}`);
+  window.location.replace(`${loginUrl.pathname}${loginUrl.search}`);
 }
 
 async function copyText(text) {

@@ -13,6 +13,7 @@
 - ✅ 邮箱账号 CRUD 操作
 - ✅ 批量导入/单个上传（支持两种格式）
 - ✅ 重复邮箱自动跳过，避免重复保存
+- ✅ 访问密码登录与 HttpOnly 签名会话
 - ✅ API Key 认证保护上传接口
 - ✅ 响应式 Web 界面
 - ✅ RESTful API 接口
@@ -51,11 +52,13 @@ npm run db:local
 
 ### 4. 配置环境变量
 
-编辑 `.dev.vars` 文件，设置你的 API Key：
+复制 `.dev.vars.example` 为 `.dev.vars`，设置上传 API Key、访问密码和独立会话密钥：
 
-\`\`\`
+```
 API_KEY=your-secret-api-key-here
-\`\`\`
+ACCESS_PASSWORD=your-strong-access-password
+SESSION_SECRET=at-least-32-random-characters
+```
 
 ### 5. 启动开发服务器
 
@@ -96,9 +99,8 @@ npx wrangler pages deploy
 # Workers & Pages > email-cf-d1 > Settings > Functions > D1 database bindings
 # 添加: Variable name = DB, D1 database = email-database
 
-# 8. 配置 API_KEY
-$key = 'your-api-key-here'
-$key | npx wrangler pages secret put API_KEY --project-name=email-cf-d1
+# 8. 在 Pages 项目的 Settings > Variables and Secrets 中配置：
+# API_KEY、ACCESS_PASSWORD、SESSION_SECRET
 ```
 
 ### GitHub 自动部署（推荐）
@@ -175,9 +177,10 @@ curl -X POST https://email-cf-d1.pages.dev/api/upload \
    - 始终使用 HTTPS 访问 API
 
 3. **访问控制**: 
-   - 考虑添加 IP 白名单
-   - 实施速率限制防止滥用
-   - 使用 Cloudflare Access 保护整个应用
+   - 系统使用访问密码和 HttpOnly 签名会话保护页面及 CRUD API
+   - 修改访问密码时同时轮换 `SESSION_SECRET`，使旧会话立即失效
+   - 在 Cloudflare WAF 中对 `/api/auth/login` 配置登录速率限制
+   - 更高安全要求下可叠加 Cloudflare Access 或 IP 白名单
 
 4. **数据安全**: 
    - 生产环境建议对敏感数据加密存储

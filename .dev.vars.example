@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local development. Never commit real secrets.
+API_KEY=replace-with-a-random-upload-api-key
+ACCESS_PASSWORD=replace-with-a-strong-access-password
+SESSION_SECRET=replace-with-at-least-32-random-characters

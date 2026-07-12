@@ -202,6 +202,14 @@ svg {
   gap: 18px;
 }
 
+.header-logout {
+  min-width: 84px;
+}
+
+.header-logout.is-loading svg {
+  animation: spin 750ms linear infinite;
+}
+
 .sync-status {
   gap: 8px;
   color: var(--text-secondary);

@@ -10,8 +10,8 @@
 **Content-Type**: `application/json`
 
 **认证方式**: 
-- 大部分接口: 无需认证
-- 上传接口: Bearer Token (API Key)
+- CRUD 接口: 登录后由浏览器携带 HttpOnly 会话 Cookie
+- 上传接口: 有效登录会话或 Bearer Token (API Key)
 
 ## 响应格式
 
@@ -284,7 +284,7 @@ const result = await response.json();
 
 ### 5. 批量/单个上传（需要认证）
 
-批量导入多条邮箱记录或单个上传。此接口需要 API Key 认证。
+批量导入多条邮箱记录或单个上传。此接口接受登录会话或 API Key 认证。
 
 **请求**
 ```
@@ -296,7 +296,7 @@ Content-Type: application/json
 **请求头**
 | 字段 | 值 | 说明 |
 |------|------|------|
-| Authorization | Bearer YOUR_API_KEY | API Key 认证 |
+| Authorization | Bearer YOUR_API_KEY | 未使用登录会话时提供 API Key |
 | Content-Type | application/json | 请求格式 |
 
 #### 方式1: 批量上传
@@ -598,36 +598,22 @@ print(response.json())
 
 ## 认证说明
 
-### API Key 配置
+### 访问密码与会话
 
 **本地开发**
 在 `.dev.vars` 文件中设置：
 ```
 API_KEY=your-local-api-key
+ACCESS_PASSWORD=your-strong-access-password
+SESSION_SECRET=at-least-32-random-characters
 ```
 
 **生产环境**
-在 Cloudflare Dashboard 设置环境变量：
-```
-Settings > Environment variables > Add variable
-Name: API_KEY
-Value: your-production-api-key
-```
+在 Cloudflare Pages 的 **Settings > Variables and Secrets** 中把 `API_KEY`、`ACCESS_PASSWORD` 和 `SESSION_SECRET` 配置为加密 Secret。`SESSION_SECRET` 必须独立生成，不能与访问密码相同。
 
-或使用命令行：
-```bash
-# 方法1: 交互式输入
-npx wrangler pages secret put API_KEY --project-name=email-cf-d1
+浏览器通过 `POST /api/auth/login` 验证访问密码。成功后服务端设置 8 小时有效的签名会话 Cookie；Cookie 为 HttpOnly，不应复制到 JavaScript 或浏览器存储。退出使用 `POST /api/auth/logout`。
 
-# 方法2: 从变量设置
-$key = 'your-api-key-here'
-$key | npx wrangler pages secret put API_KEY --project-name=email-cf-d1
-```
-
-⚠️ **注意**: 设置 API_KEY 后需要重新部署才能生效：
-```bash
-npx wrangler pages deploy --project-name=email-cf-d1
-```
+页面和 CRUD API 默认需要登录会话。未登录的页面请求跳转到 `/login`，未登录的 API 请求返回 JSON `401`。
 
 ### 使用 API Key
 
@@ -637,34 +623,15 @@ Authorization: Bearer YOUR_API_KEY
 ```
 
 **注意**:
-- 仅 `/api/upload` 接口需要认证
-- 其他接口无需认证（如需保护，可修改 `_middleware.ts`）
+- API Key 只允许调用 `/api/upload`，不能读取或修改 CRUD 接口
+- 已登录的同源页面也可以调用 `/api/upload`
+- 修改 `ACCESS_PASSWORD` 时同时轮换 `SESSION_SECRET`，使已有会话失效
 
 ## 速率限制
 
-目前未实施速率限制，建议自行实现：
+`POST /api/auth/login` 使用 D1 持久化失败次数：同一客户端在 60 秒内失败 5 次后封禁 10 分钟，返回 `429` 和 `Retry-After`。数据库仅保存客户端 IP 的 HMAC，不保存原始 IP。
 
-**简单限制示例**（在 `_middleware.ts` 中）：
-```typescript
-const requestCounts = new Map();
-
-export const onRequest: PagesFunction = async (context) => {
-  const ip = context.request.headers.get('CF-Connecting-IP');
-  const count = requestCounts.get(ip) || 0;
-  
-  if (count > 100) {  // 100 次/分钟
-    return new Response(
-      JSON.stringify({ error: 'Too Many Requests' }),
-      { status: 429, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-  
-  requestCounts.set(ip, count + 1);
-  setTimeout(() => requestCounts.delete(ip), 60000);
-  
-  return context.next();
-};
-```
+应用层限速之外，生产环境仍建议在 Cloudflare WAF 中为登录路径配置边缘 Rate Limiting；其他 CRUD/API 请求可根据实际流量另行配置规则。
 
 ## CORS 支持
 
