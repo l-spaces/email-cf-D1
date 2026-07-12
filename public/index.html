@@ -104,6 +104,36 @@
             </tbody>
           </table>
         </div>
+
+        <div class="pagination" id="pagination" hidden>
+          <div class="pagination-info" id="paginationInfo" aria-live="polite">
+            第 1-20 条，共 100 条
+          </div>
+          <nav class="pagination-nav" aria-label="分页导航">
+            <button id="firstPageBtn" class="btn btn-secondary pagination-btn" type="button" aria-label="第一页" title="第一页" disabled>
+              <i data-lucide="chevrons-left" aria-hidden="true"></i>
+            </button>
+            <button id="prevPageBtn" class="btn btn-secondary pagination-btn" type="button" aria-label="上一页" title="上一页" disabled>
+              <i data-lucide="chevron-left" aria-hidden="true"></i>
+            </button>
+            <div class="pagination-pages" id="paginationPages"></div>
+            <button id="nextPageBtn" class="btn btn-secondary pagination-btn" type="button" aria-label="下一页" title="下一页">
+              <i data-lucide="chevron-right" aria-hidden="true"></i>
+            </button>
+            <button id="lastPageBtn" class="btn btn-secondary pagination-btn" type="button" aria-label="最后一页" title="最后一页">
+              <i data-lucide="chevrons-right" aria-hidden="true"></i>
+            </button>
+          </nav>
+          <div class="pagination-size">
+            <label for="pageSizeSelect" class="sr-only">每页显示数量</label>
+            <select id="pageSizeSelect" class="page-size-select">
+              <option value="10">10条/页</option>
+              <option value="20" selected>20条/页</option>
+              <option value="50">50条/页</option>
+              <option value="100">100条/页</option>
+            </select>
+          </div>
+        </div>
       </section>
     </main>
   </div>

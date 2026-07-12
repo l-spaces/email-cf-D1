@@ -37,12 +37,19 @@
 
 ### 1. 获取邮箱列表
 
-获取所有邮箱账号信息。
+获取所有邮箱账号信息，支持分页和搜索。
 
 **请求**
 ```
-GET /api/emails
+GET /api/emails?page=1&limit=20&search=keyword
 ```
+
+**查询参数**
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| page | integer | ❌ | 1 | 页码，从1开始 |
+| limit | integer | ❌ | 20 | 每页数量，最小1，最大100 |
+| search | string | ❌ | - | 搜索关键词，匹配邮箱地址或备注 |
 
 **响应示例**
 ```json
@@ -65,7 +72,13 @@ GET /api/emails
       "created_at": "2024-01-02 10:30:00",
       "updated_at": "2024-01-02 10:30:00"
     }
-  ]
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "totalPages": 5
+  }
 }
 ```
 
@@ -79,9 +92,24 @@ GET /api/emails
 | created_at | string | 创建时间 |
 | updated_at | string | 更新时间 |
 
+**分页信息**
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| page | integer | 当前页码 |
+| limit | integer | 每页数量 |
+| total | integer | 总记录数 |
+| totalPages | integer | 总页数 |
+
 **cURL 示例**
 ```bash
-curl http://localhost:8788/api/emails
+# 获取第一页，每页20条
+curl http://localhost:8788/api/emails?page=1&limit=20
+
+# 搜索包含example的邮箱
+curl http://localhost:8788/api/emails?search=example
+
+# 获取第2页，每页50条，搜索gmail
+curl "http://localhost:8788/api/emails?page=2&limit=50&search=gmail"
 ```
 
 ---
@@ -847,6 +875,12 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
 ```
 
 ## 更新日志
+
+### v1.2 (2026-07-12)
+- ✅ 添加分页功能支持
+- ✅ 前端账号列表分页显示
+- ✅ 后端API支持page、limit、search参数
+- ✅ 优化大数据量场景性能
 
 ### v1.1 (2026-07-12)
 - ✅ 生产环境部署成功

@@ -5,6 +5,10 @@ let currentEditId = null;
 let pendingDeleteId = null;
 let searchQuery = '';
 let isLoading = false;
+let currentPage = 1;
+let pageSize = 20;
+let totalRecords = 0;
+let totalPages = 0;
 
 const revealedPasswords = new Set();
 
@@ -37,6 +41,14 @@ const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 const closeDeleteDialogBtn = document.getElementById('closeDeleteDialogBtn');
 const toastContainer = document.getElementById('toastContainer');
+const pagination = document.getElementById('pagination');
+const paginationInfo = document.getElementById('paginationInfo');
+const paginationPages = document.getElementById('paginationPages');
+const firstPageBtn = document.getElementById('firstPageBtn');
+const prevPageBtn = document.getElementById('prevPageBtn');
+const nextPageBtn = document.getElementById('nextPageBtn');
+const lastPageBtn = document.getElementById('lastPageBtn');
+const pageSizeSelect = document.getElementById('pageSizeSelect');
 
 initialize();
 
@@ -63,6 +75,13 @@ function initialize() {
   bindDialogBehavior(emailDialog, resetEditor);
   bindDialogBehavior(deleteDialog, resetDeleteDialog);
 
+  firstPageBtn.addEventListener('click', () => goToPage(1));
+  prevPageBtn.addEventListener('click', () => goToPage(currentPage - 1));
+  nextPageBtn.addEventListener('click', () => goToPage(currentPage + 1));
+  lastPageBtn.addEventListener('click', () => goToPage(totalPages));
+  pageSizeSelect.addEventListener('change', handlePageSizeChange);
+  paginationPages.addEventListener('click', handlePageClick);
+
   loadEmails();
 }
 
@@ -82,10 +101,24 @@ async function loadEmails({ announce = false } = {}) {
   }
 
   try {
-    const result = await requestJson('/api/emails');
+    const params = new URLSearchParams({
+      page: String(currentPage),
+      limit: String(pageSize)
+    });
+
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery.trim());
+    }
+
+    const result = await requestJson(`/api/emails?${params}`);
     emails = normalizeEmails(result.data);
+    totalRecords = result.pagination?.total || 0;
+    totalPages = result.pagination?.totalPages || 0;
+    currentPage = result.pagination?.page || 1;
+
     removeMissingRevealedPasswords();
     renderTable();
+    renderPagination();
     setSyncStatus('已同步', 'ready');
 
     if (announce) {
@@ -123,23 +156,14 @@ function normalizeEmails(data) {
 }
 
 function getFilteredEmails() {
-  const query = searchQuery.trim().toLocaleLowerCase('zh-CN');
-
-  if (!query) {
-    return emails;
-  }
-
-  return emails.filter((record) => {
-    const searchable = `${record.email} ${record.description} ${record.id}`.toLocaleLowerCase('zh-CN');
-    return searchable.includes(query);
-  });
+  return emails;
 }
 
 function renderTable() {
   const filteredEmails = getFilteredEmails();
-  updateResultSummary(filteredEmails.length);
+  updateResultSummary();
 
-  if (emails.length === 0) {
+  if (totalRecords === 0) {
     renderEmptyState();
     return;
   }
@@ -309,19 +333,20 @@ function renderErrorState() {
   refreshIcons();
 }
 
-function updateResultSummary(filteredCount) {
+function updateResultSummary() {
   if (searchQuery.trim()) {
-    resultSummary.textContent = `${filteredCount} 个匹配结果，共 ${emails.length} 个账号`;
+    resultSummary.textContent = `搜索结果：共 ${totalRecords} 个匹配账号`;
     return;
   }
 
-  resultSummary.textContent = `共 ${emails.length} 个账号`;
+  resultSummary.textContent = `共 ${totalRecords} 个账号`;
 }
 
 function handleSearch(event) {
   searchQuery = event.target.value;
   clearSearchBtn.hidden = searchQuery.length === 0;
-  renderTable();
+  currentPage = 1;
+  loadEmails();
 }
 
 function handleSearchKeydown(event) {
@@ -335,7 +360,8 @@ function clearSearch({ focus = true } = {}) {
   searchInput.value = '';
   searchQuery = '';
   clearSearchBtn.hidden = true;
-  renderTable();
+  currentPage = 1;
+  loadEmails();
 
   if (focus) {
     searchInput.focus();
@@ -438,6 +464,7 @@ async function submitEmailForm(event) {
     setFormSubmitting(false);
     closeDialog(emailDialog);
     showToast(isEditing ? '账号已更新' : '账号已添加', 'success');
+    currentPage = 1;
     await loadEmails();
   } catch (error) {
     setFormError(error.message || '保存失败，请稍后重试');
@@ -494,6 +521,82 @@ function toggleRowPassword(id) {
   }
 
   renderTable();
+}
+
+function goToPage(page) {
+  if (page < 1 || page > totalPages || page === currentPage) {
+    return;
+  }
+
+  currentPage = page;
+  loadEmails();
+}
+
+function handlePageClick(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  const button = target?.closest('button[data-page]');
+
+  if (!button || !paginationPages.contains(button)) {
+    return;
+  }
+
+  const page = Number(button.dataset.page);
+  goToPage(page);
+}
+
+function handlePageSizeChange(event) {
+  pageSize = Number(event.target.value);
+  currentPage = 1;
+  loadEmails();
+}
+
+function renderPagination() {
+  if (totalRecords === 0) {
+    pagination.hidden = true;
+    return;
+  }
+
+  pagination.hidden = false;
+
+  const start = (currentPage - 1) * pageSize + 1;
+  const end = Math.min(currentPage * pageSize, totalRecords);
+  paginationInfo.textContent = `第 ${start}-${end} 条，共 ${totalRecords} 条`;
+
+  firstPageBtn.disabled = currentPage === 1;
+  prevPageBtn.disabled = currentPage === 1;
+  nextPageBtn.disabled = currentPage === totalPages;
+  lastPageBtn.disabled = currentPage === totalPages;
+
+  renderPageButtons();
+  refreshIcons();
+}
+
+function renderPageButtons() {
+  const maxButtons = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+  const endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+  if (endPage - startPage < maxButtons - 1) {
+    startPage = Math.max(1, endPage - maxButtons + 1);
+  }
+
+  let buttons = '';
+  for (let i = startPage; i <= endPage; i++) {
+    const isActive = i === currentPage;
+    buttons += `
+      <button
+        class="btn ${isActive ? 'btn-primary' : 'btn-secondary'} pagination-page"
+        type="button"
+        data-page="${i}"
+        ${isActive ? 'aria-current="page"' : ''}
+        ${isActive ? 'disabled' : ''}
+      >
+        ${i}
+      </button>
+    `;
+  }
+
+  paginationPages.innerHTML = buttons;
 }
 
 async function copyPassword(record) {
