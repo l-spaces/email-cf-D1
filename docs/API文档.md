@@ -5,6 +5,7 @@
 **Base URL**: 
 - 本地开发: `http://localhost:8788`
 - 生产环境: `https://email-cf-d1.pages.dev`
+- 自定义域名: `https://x-y.cc.cd`
 
 **Content-Type**: `application/json`
 
@@ -613,6 +614,21 @@ Name: API_KEY
 Value: your-production-api-key
 ```
 
+或使用命令行：
+```bash
+# 方法1: 交互式输入
+npx wrangler pages secret put API_KEY --project-name=email-cf-d1
+
+# 方法2: 从变量设置
+$key = 'your-api-key-here'
+$key | npx wrangler pages secret put API_KEY --project-name=email-cf-d1
+```
+
+⚠️ **注意**: 设置 API_KEY 后需要重新部署才能生效：
+```bash
+npx wrangler pages deploy --project-name=email-cf-d1
+```
+
 ### 使用 API Key
 
 在请求头中添加 Authorization：
@@ -864,6 +880,14 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
 ```
 
 ## 更新日志
+
+### v1.1 (2026-07-12)
+- ✅ 生产环境部署成功
+- ✅ D1 数据库配置完成
+- ✅ API_KEY 认证测试通过
+- ✅ 批量上传功能验证
+- ✅ 重复邮箱自动跳过
+- ✅ 添加自定义域名支持
 
 ### v1.0 (2026-07-12)
 - 初始版本

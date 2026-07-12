@@ -10,26 +10,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   if (url.pathname === '/api/upload') {
     const authHeader = context.request.headers.get('Authorization');
     const token = authHeader?.replace('Bearer ', '');
-    const expectedKey = context.env.API_KEY;
 
-    console.log('Auth check:', {
-      authHeader,
-      token,
-      tokenLength: token?.length,
-      expectedLength: expectedKey?.length,
-      match: token === expectedKey
-    });
-
-    if (!token || !expectedKey || token !== expectedKey) {
-      return new Response(JSON.stringify({
-        error: 'Unauthorized',
-        debug: {
-          hasToken: !!token,
-          hasEnvKey: !!expectedKey,
-          tokenLength: token?.length,
-          expectedLength: expectedKey?.length
-        }
-      }), {
+    if (!token || token !== context.env.API_KEY) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
