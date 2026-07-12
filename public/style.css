@@ -313,6 +313,10 @@ svg {
   color: var(--text);
 }
 
+.search-field input:focus-visible {
+  outline: none;
+}
+
 .search-field input::placeholder {
   color: #8b9691;
 }
@@ -420,8 +424,6 @@ svg {
 .icon-btn:focus-visible,
 .search-clear:focus-visible,
 .input-action:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
 .skip-link:focus-visible {
   outline: 3px solid rgba(37, 99, 235, 0.3);
   outline-offset: 2px;
@@ -904,6 +906,11 @@ tbody tr.account-row:hover {
   outline: 0;
   background: transparent;
   color: var(--text);
+}
+
+.input-control input:focus-visible,
+.input-control textarea:focus-visible {
+  outline: none;
 }
 
 .input-control input {
