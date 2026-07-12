@@ -13,9 +13,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const expectedKey = context.env.API_KEY;
 
     console.log('Auth check:', {
-      hasToken: !!token,
-      hasEnvKey: !!expectedKey,
-      tokenMatch: token === expectedKey
+      authHeader,
+      token,
+      tokenLength: token?.length,
+      expectedLength: expectedKey?.length,
+      match: token === expectedKey
     });
 
     if (!token || !expectedKey || token !== expectedKey) {
@@ -23,7 +25,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         error: 'Unauthorized',
         debug: {
           hasToken: !!token,
-          hasEnvKey: !!expectedKey
+          hasEnvKey: !!expectedKey,
+          tokenLength: token?.length,
+          expectedLength: expectedKey?.length
         }
       }), {
         status: 401,
