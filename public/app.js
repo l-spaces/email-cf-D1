@@ -192,15 +192,27 @@ function renderEmailRow(record) {
     <tr class="account-row">
       <td class="account-column" data-label="邮箱账号">
         <div class="account-cell">
-          <span class="account-avatar avatar-tone-${tone}" aria-hidden="true">${avatar}</span>
-          <div class="account-details">
-            <span class="account-email">${safeEmail}</span>
-            <span class="account-meta">
-              <span>#${record.id}</span>
-              <span aria-hidden="true">·</span>
-              <span>${domain}</span>
-            </span>
+          <div>
+            <span class="account-avatar avatar-tone-${tone}" aria-hidden="true">${avatar}</span>
+            <div class="account-details">
+              <span class="account-email">${safeEmail}</span>
+              <span class="account-meta">
+                <span>#${record.id}</span>
+                <span aria-hidden="true">·</span>
+                <span>${domain}</span>
+              </span>
+            </div>
           </div>
+          <button
+            class="cell-action"
+            type="button"
+            data-action="copy-email"
+            data-id="${record.id}"
+            aria-label="复制 ${emailLabel}"
+            title="复制邮箱"
+          >
+            <i data-lucide="copy" aria-hidden="true"></i>
+          </button>
         </div>
       </td>
       <td class="password-column" data-label="密码">
@@ -409,6 +421,8 @@ function handleTableAction(event) {
     toggleRowPassword(id);
   } else if (action === 'copy-password') {
     copyPassword(record);
+  } else if (action === 'copy-email') {
+    copyEmail(record);
   }
 }
 
@@ -605,6 +619,15 @@ async function copyPassword(record) {
     showToast(`${record.email} 的密码已复制`, 'success');
   } catch (error) {
     showToast('复制失败，请手动选择密码', 'error');
+  }
+}
+
+async function copyEmail(record) {
+  try {
+    await copyText(record.email);
+    showToast(`${record.email} 已复制`, 'success');
+  } catch (error) {
+    showToast('复制失败，请手动选择邮箱', 'error');
   }
 }
 

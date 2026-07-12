@@ -525,6 +525,15 @@ tbody tr.account-row:hover {
 .account-cell {
   min-width: 0;
   gap: 12px;
+  justify-content: space-between;
+}
+
+.account-cell > :first-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .account-avatar {
