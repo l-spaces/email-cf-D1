@@ -748,9 +748,12 @@ tbody tr.account-row:hover {
 }
 
 .dialog {
+  position: fixed;
+  inset: 0;
   width: min(calc(100% - 32px), 520px);
   max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
+  margin: auto;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -1327,17 +1330,13 @@ tbody tr.account-row:hover {
   }
 
   .dialog {
-    position: fixed;
-    inset: auto 0 0;
-    width: 100%;
+    inset: 0;
+    width: calc(100% - 24px);
     max-width: none;
-    max-height: 92vh;
-    max-height: 92dvh;
-    margin: 0;
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 0;
-    border-radius: 8px 8px 0 0;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    margin: auto;
+    border-radius: 8px;
   }
 
   .dialog-header {
