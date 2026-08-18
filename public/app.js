@@ -29,6 +29,7 @@ const modalMode = document.getElementById('modalMode');
 const modalTitle = document.getElementById('modalTitle');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
+const secondaryEmailInput = document.getElementById('secondaryEmail');
 const descriptionInput = document.getElementById('description');
 const formPasswordToggle = document.getElementById('formPasswordToggle');
 const formError = document.getElementById('formError');
@@ -149,6 +150,7 @@ function normalizeEmails(data) {
       id: Number(record.id),
       email: String(record.email ?? ''),
       password: String(record.password ?? ''),
+      secondaryEmail: String(record.secondary_email ?? ''),
       description: String(record.description ?? ''),
       createdAt: String(record.created_at ?? '')
     }))
@@ -183,6 +185,7 @@ function renderEmailRow(record) {
   const emailLabel = escapeAttribute(record.email);
   const password = isRevealed ? escapeHtml(record.password) : '••••••••••';
   const note = record.description ? escapeHtml(record.description) : '未添加备注';
+  const secondaryEmail = record.secondaryEmail ? escapeHtml(record.secondaryEmail) : '未添加辅助邮箱';
   const domain = escapeHtml(getEmailDomain(record.email));
   const avatar = escapeHtml(getAvatarText(record.email));
   const tone = getAvatarTone(record.email);
@@ -240,6 +243,9 @@ function renderEmailRow(record) {
           </button>
         </div>
       </td>
+      <td class="secondary-column" data-label="辅助邮箱">
+        <span class="secondary-text${record.secondaryEmail ? '' : ' is-empty'}">${secondaryEmail}</span>
+      </td>
       <td class="note-column" data-label="备注">
         <span class="note-text${record.description ? '' : ' is-empty'}">${note}</span>
       </td>
@@ -280,7 +286,7 @@ function renderLoadingState() {
   resultSummary.textContent = '正在载入账号';
   tableBody.innerHTML = `
     <tr class="status-row">
-      <td colspan="5">
+      <td colspan="6">
         <div class="loading-state" role="status">
           <span class="spinner" aria-hidden="true"></span>
           <span>正在加载账号</span>
@@ -293,7 +299,7 @@ function renderLoadingState() {
 function renderEmptyState() {
   tableBody.innerHTML = `
     <tr class="status-row">
-      <td colspan="5">
+      <td colspan="6">
         <div class="empty-state">
           <span class="empty-icon" aria-hidden="true"><i data-lucide="inbox"></i></span>
           <h3>暂无邮箱账号</h3>
@@ -312,7 +318,7 @@ function renderEmptyState() {
 function renderNoResultsState() {
   tableBody.innerHTML = `
     <tr class="status-row">
-      <td colspan="5">
+      <td colspan="6">
         <div class="empty-state">
           <span class="empty-icon" aria-hidden="true"><i data-lucide="search-x"></i></span>
           <h3>没有匹配的账号</h3>
@@ -329,7 +335,7 @@ function renderErrorState() {
   resultSummary.textContent = '账号加载失败';
   tableBody.innerHTML = `
     <tr class="status-row">
-      <td colspan="5">
+      <td colspan="6">
         <div class="error-state" role="alert">
           <span class="error-icon" aria-hidden="true"><i data-lucide="triangle-alert"></i></span>
           <h3>无法加载账号</h3>
@@ -439,6 +445,7 @@ function openEditor(record = null) {
     submitLabel.textContent = '更新账号';
     emailInput.value = record.email;
     passwordInput.value = record.password;
+    secondaryEmailInput.value = record.secondaryEmail;
     descriptionInput.value = record.description;
   } else {
     currentEditId = null;
@@ -462,6 +469,7 @@ async function submitEmailForm(event) {
   const data = {
     email: emailInput.value.trim(),
     password: passwordInput.value,
+    secondary_email: secondaryEmailInput.value.trim(),
     description: descriptionInput.value.trim()
   };
 

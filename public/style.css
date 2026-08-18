@@ -441,18 +441,22 @@ svg {
 
 table {
   width: 100%;
-  min-width: 900px;
+  min-width: 1040px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
 }
 
 .col-account {
-  width: 29%;
+  width: 23%;
 }
 
 .col-password {
-  width: 23%;
+  width: 16%;
+}
+
+.col-secondary {
+  width: 22%;
 }
 
 .col-note {
@@ -460,11 +464,11 @@ table {
 }
 
 .col-date {
-  width: 176px;
+  width: 168px;
 }
 
 .col-actions {
-  width: 112px;
+  width: 104px;
 }
 
 thead {
@@ -639,6 +643,21 @@ tbody tr.account-row:hover {
 .cell-action svg {
   width: 16px;
   height: 16px;
+}
+
+.secondary-text {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.secondary-text.is-empty {
+  color: #929d98;
 }
 
 .note-text {
@@ -1269,6 +1288,7 @@ tbody tr.account-row:hover {
     padding-bottom: 2px !important;
   }
 
+  .secondary-column,
   .note-column,
   .date-column {
     display: grid;
@@ -1276,12 +1296,17 @@ tbody tr.account-row:hover {
     gap: 4px;
   }
 
+  .secondary-column::before,
   .note-column::before,
   .date-column::before {
     content: attr(data-label);
     color: var(--text-muted);
     font-size: 10px;
     font-weight: 700;
+  }
+
+  .secondary-column {
+    grid-column: 1 / -1;
   }
 
   .date-column {

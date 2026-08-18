@@ -53,15 +53,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body = await context.request.json() as any;
-    const { email, password, description } = body;
+    const { email, password, secondary_email, description } = body;
 
     if (!email || !password) {
       return Response.json({ success: false, error: 'Email and password are required' }, { status: 400 });
     }
 
     const result = await context.env.DB.prepare(
-      'INSERT INTO emails (email, password, description) VALUES (?, ?, ?)'
-    ).bind(email, password, description || '').run();
+      'INSERT INTO emails (email, password, secondary_email, description) VALUES (?, ?, ?, ?)'
+    ).bind(email, password, secondary_email || '', description || '').run();
 
     return Response.json({ success: true, data: { id: result.meta.last_row_id } }, { status: 201 });
   } catch (error) {

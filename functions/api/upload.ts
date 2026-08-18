@@ -5,6 +5,7 @@ interface Env {
 interface EmailData {
   email: string;
   password: string;
+  secondary_email?: string;
   description?: string;
 }
 
@@ -58,8 +59,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         }
 
         await db.prepare(
-          'INSERT INTO emails (email, password, description) VALUES (?, ?, ?)'
-        ).bind(item.email, item.password, item.description || '').run();
+          'INSERT INTO emails (email, password, secondary_email, description) VALUES (?, ?, ?, ?)'
+        ).bind(item.email, item.password, item.secondary_email || '', item.description || '').run();
 
         successCount++;
       } catch (error) {
