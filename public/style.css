@@ -448,11 +448,11 @@ table {
 }
 
 .col-account {
-  width: 23%;
+  width: 28%;
 }
 
 .col-password {
-  width: 16%;
+  width: 18%;
 }
 
 .col-secondary {
@@ -464,7 +464,7 @@ table {
 }
 
 .col-date {
-  width: 168px;
+  width: 150px;
 }
 
 .col-actions {
