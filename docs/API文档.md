@@ -49,7 +49,7 @@ GET /api/emails?page=1&limit=20&search=keyword
 |------|------|------|--------|------|
 | page | integer | ❌ | 1 | 页码，从1开始 |
 | limit | integer | ❌ | 20 | 每页数量，最小1，最大100 |
-| search | string | ❌ | - | 搜索关键词，匹配邮箱地址或备注 |
+| search | string | ❌ | - | 搜索关键词，匹配邮箱地址或备注（不含辅助邮箱） |
 
 **响应示例**
 ```json
@@ -60,6 +60,7 @@ GET /api/emails?page=1&limit=20&search=keyword
       "id": 1,
       "email": "test@example.com",
       "password": "password123",
+      "secondary_email": "backup@example.com",
       "description": "测试账号",
       "created_at": "2024-01-01 12:00:00",
       "updated_at": "2024-01-01 12:00:00"
@@ -68,6 +69,7 @@ GET /api/emails?page=1&limit=20&search=keyword
       "id": 2,
       "email": "demo@example.com",
       "password": "demopass",
+      "secondary_email": "",
       "description": "演示账号",
       "created_at": "2024-01-02 10:30:00",
       "updated_at": "2024-01-02 10:30:00"
@@ -88,6 +90,7 @@ GET /api/emails?page=1&limit=20&search=keyword
 | id | integer | 邮箱记录 ID |
 | email | string | 邮箱地址 |
 | password | string | 密码 |
+| secondary_email | string | 辅助邮箱（未填写时为空字符串） |
 | description | string | 备注说明 |
 | created_at | string | 创建时间 |
 | updated_at | string | 更新时间 |
@@ -129,6 +132,7 @@ Content-Type: application/json
 {
   "email": "new@example.com",
   "password": "newpassword",
+  "secondary_email": "backup@example.com",
   "description": "备注信息"
 }
 ```
@@ -138,6 +142,7 @@ Content-Type: application/json
 |------|------|------|------|
 | email | string | ✅ | 邮箱地址 |
 | password | string | ✅ | 密码 |
+| secondary_email | string | ❌ | 辅助邮箱，不传则存为空字符串 |
 | description | string | ❌ | 备注信息 |
 
 **响应示例**
@@ -165,6 +170,7 @@ curl -X POST http://localhost:8788/api/emails \
   -d '{
     "email": "new@example.com",
     "password": "newpassword",
+    "secondary_email": "backup@example.com",
     "description": "新账号"
   }'
 ```
@@ -179,6 +185,7 @@ const response = await fetch('/api/emails', {
   body: JSON.stringify({
     email: 'new@example.com',
     password: 'newpassword',
+    secondary_email: 'backup@example.com',
     description: '新账号'
   })
 });
@@ -209,6 +216,7 @@ Content-Type: application/json
 {
   "email": "updated@example.com",
   "password": "updatedpassword",
+  "secondary_email": "backup@example.com",
   "description": "更新后的备注"
 }
 ```
@@ -218,7 +226,10 @@ Content-Type: application/json
 |------|------|------|------|
 | email | string | ✅ | 邮箱地址 |
 | password | string | ✅ | 密码 |
+| secondary_email | string | ❌ | 辅助邮箱，不传则覆盖为空字符串 |
 | description | string | ❌ | 备注信息 |
+
+> ⚠️ 更新为整体覆盖：未提交的选填字段会被写为空字符串，而非保留原值。
 
 **响应示例**
 ```json
@@ -242,6 +253,7 @@ curl -X PUT http://localhost:8788/api/emails/1 \
   -d '{
     "email": "updated@example.com",
     "password": "newpass123",
+    "secondary_email": "backup@example.com",
     "description": "更新的备注"
   }'
 ```
@@ -256,6 +268,7 @@ const response = await fetch('/api/emails/1', {
   body: JSON.stringify({
     email: 'updated@example.com',
     password: 'newpass123',
+    secondary_email: 'backup@example.com',
     description: '更新的备注'
   })
 });
@@ -336,11 +349,13 @@ Content-Type: application/json
     {
       "email": "test1@example.com",
       "password": "password1",
+      "secondary_email": "backup1@example.com",
       "description": "账号1"
     },
     {
       "email": "test2@example.com",
       "password": "password2",
+      "secondary_email": "backup2@example.com",
       "description": "账号2"
     },
     {
@@ -358,6 +373,7 @@ Content-Type: application/json
 | emails | array | ✅ | 邮箱数组 |
 | emails[].email | string | ✅ | 邮箱地址 |
 | emails[].password | string | ✅ | 密码 |
+| emails[].secondary_email | string | ❌ | 辅助邮箱，不传则存为空字符串 |
 | emails[].description | string | ❌ | 备注信息 |
 
 #### 方式2: 单个上传
@@ -367,6 +383,7 @@ Content-Type: application/json
 {
   "email": "single@example.com",
   "password": "password123",
+  "secondary_email": "backup@example.com",
   "description": "单个账号"
 }
 ```
@@ -376,6 +393,7 @@ Content-Type: application/json
 |------|------|------|------|
 | email | string | ✅ | 邮箱地址 |
 | password | string | ✅ | 密码 |
+| secondary_email | string | ❌ | 辅助邮箱，不传则存为空字符串 |
 | description | string | ❌ | 备注信息 |
 
 **响应示例**
@@ -455,11 +473,13 @@ curl -X POST http://localhost:8788/api/upload \
       {
         "email": "test1@example.com",
         "password": "pass1",
+        "secondary_email": "backup1@example.com",
         "description": "测试1"
       },
       {
         "email": "test2@example.com",
         "password": "pass2",
+        "secondary_email": "backup2@example.com",
         "description": "测试2"
       }
     ]
@@ -474,6 +494,7 @@ curl -X POST http://localhost:8788/api/upload \
   -d '{
     "email": "single@example.com",
     "password": "singlepass",
+    "secondary_email": "backup@example.com",
     "description": "单个测试账号"
   }'
 ```
@@ -491,11 +512,13 @@ const response = await fetch('/api/upload', {
       {
         email: 'test1@example.com',
         password: 'pass1',
+        secondary_email: 'backup1@example.com',
         description: '测试1'
       },
       {
         email: 'test2@example.com',
         password: 'pass2',
+        secondary_email: 'backup2@example.com',
         description: '测试2'
       }
     ]
@@ -517,6 +540,7 @@ const response = await fetch('/api/upload', {
   body: JSON.stringify({
     email: 'single@example.com',
     password: 'singlepass',
+    secondary_email: 'backup@example.com',
     description: '单个账号'
   })
 });
@@ -539,11 +563,13 @@ data = {
         {
             'email': 'test1@example.com',
             'password': 'pass1',
+            'secondary_email': 'backup1@example.com',
             'description': '测试1'
         },
         {
             'email': 'test2@example.com',
             'password': 'pass2',
+            'secondary_email': 'backup2@example.com',
             'description': '测试2'
         }
     ]
@@ -565,6 +591,7 @@ headers = {
 data = {
     'email': 'single@example.com',
     'password': 'singlepass',
+    'secondary_email': 'backup@example.com',
     'description': '单个测试账号'
 }
 
@@ -720,6 +747,7 @@ await fetch('/api/upload', {
   body: JSON.stringify({
     email: 'test@example.com',
     password: 'pass123',
+    secondary_email: 'backup@example.com',
     description: '备注'
   })
 });
@@ -800,7 +828,7 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"description\": \"测试账号\"\n}"
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"secondary_email\": \"backup@example.com\",\n  \"description\": \"测试账号\"\n}"
         }
       }
     },
@@ -817,7 +845,7 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpass\",\n  \"description\": \"更新后\"\n}"
+          "raw": "{\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpass\",\n  \"secondary_email\": \"backup@example.com\",\n  \"description\": \"更新后\"\n}"
         }
       }
     },
@@ -845,7 +873,7 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"emails\": [\n    {\n      \"email\": \"test1@example.com\",\n      \"password\": \"pass1\",\n      \"description\": \"账号1\"\n    },\n    {\n      \"email\": \"test2@example.com\",\n      \"password\": \"pass2\",\n      \"description\": \"账号2\"\n    }\n  ]\n}"
+          "raw": "{\n  \"emails\": [\n    {\n      \"email\": \"test1@example.com\",\n      \"password\": \"pass1\",\n      \"secondary_email\": \"backup1@example.com\",\n      \"description\": \"账号1\"\n    },\n    {\n      \"email\": \"test2@example.com\",\n      \"password\": \"pass2\",\n      \"secondary_email\": \"backup2@example.com\",\n      \"description\": \"账号2\"\n    }\n  ]\n}"
         }
       }
     },
@@ -866,7 +894,7 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"single@example.com\",\n  \"password\": \"singlepass\",\n  \"description\": \"单个账号\"\n}"
+          "raw": "{\n  \"email\": \"single@example.com\",\n  \"password\": \"singlepass\",\n  \"secondary_email\": \"backup@example.com\",\n  \"description\": \"单个账号\"\n}"
         }
       }
     }
@@ -875,6 +903,13 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
 ```
 
 ## 更新日志
+
+### v1.3 (2026-08-19)
+- ✅ 新增 `secondary_email`（辅助邮箱）字段，选填
+- ✅ 列表、新增、更新、上传接口均支持该字段
+- ✅ 前端列表在「备注」列前展示辅助邮箱
+- ⚠️ 需对已有数据库执行迁移：`ALTER TABLE emails ADD COLUMN secondary_email TEXT;`
+  （脚本见 `migrations/add_secondary_email.sql`；未执行时写入类接口会因缺列而失败）
 
 ### v1.2 (2026-07-12)
 - ✅ 添加分页功能支持
@@ -900,6 +935,6 @@ const API_KEY = 'your-secret-key';  // 会被用户看到
 
 ---
 
-**文档版本**: v1.0  
-**最后更新**: 2026-07-12  
+**文档版本**: v1.3  
+**最后更新**: 2026-08-19  
 **联系方式**: [待补充]

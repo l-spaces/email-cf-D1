@@ -19,7 +19,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       // 批量上传格式: { "emails": [...] }
       emails = body.emails;
     } else if (body.email && body.password) {
-      // 单个上传格式: { "email": "...", "password": "...", "description": "..." }
+      // 单个上传格式: { "email": "...", "password": "...", "secondary_email": "...", "description": "..." }
       emails = [body as EmailData];
     } else {
       return Response.json({
