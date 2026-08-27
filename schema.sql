@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS emails (
   email TEXT NOT NULL,
   password TEXT NOT NULL,
   secondary_email TEXT,
+  secondary_email_url TEXT,
   description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

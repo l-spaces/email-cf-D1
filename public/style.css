@@ -441,22 +441,26 @@ svg {
 
 table {
   width: 100%;
-  min-width: 1040px;
+  min-width: 1280px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
 }
 
 .col-account {
-  width: 28%;
+  width: 20%;
 }
 
 .col-password {
-  width: 18%;
+  width: 13%;
 }
 
 .col-secondary {
-  width: 22%;
+  width: 17%;
+}
+
+.col-secondary-url {
+  width: 20%;
 }
 
 .col-note {
@@ -658,6 +662,30 @@ tbody tr.account-row:hover {
 
 .secondary-text.is-empty {
   color: #929d98;
+}
+
+.secondary-url-text {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.secondary-url-text.is-empty {
+  color: #929d98;
+}
+
+a.secondary-url-link {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a.secondary-url-link:hover {
+  text-decoration: underline;
 }
 
 .note-text {
@@ -1289,6 +1317,7 @@ tbody tr.account-row:hover {
   }
 
   .secondary-column,
+  .secondary-url-column,
   .note-column,
   .date-column {
     display: grid;
@@ -1297,6 +1326,7 @@ tbody tr.account-row:hover {
   }
 
   .secondary-column::before,
+  .secondary-url-column::before,
   .note-column::before,
   .date-column::before {
     content: attr(data-label);
@@ -1306,6 +1336,10 @@ tbody tr.account-row:hover {
   }
 
   .secondary-column {
+    grid-column: 1 / -1;
+  }
+
+  .secondary-url-column {
     grid-column: 1 / -1;
   }
 

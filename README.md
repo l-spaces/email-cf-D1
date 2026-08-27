@@ -122,7 +122,7 @@ curl https://email-cf-d1.pages.dev/api/emails
 ```bash
 curl -X POST https://email-cf-d1.pages.dev/api/emails \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"pass123","secondary_email":"backup@example.com","description":"测试"}'
+  -d '{"email":"test@example.com","password":"pass123","secondary_email":"backup@example.com","secondary_email_url":"https://example.com/shared/abcd1234","description":"测试"}'
 ```
 
 #### 批量上传（需要 API Key）
@@ -132,8 +132,8 @@ curl -X POST https://email-cf-d1.pages.dev/api/upload \
   -H "Content-Type: application/json" \
   -d '{
     "emails": [
-      {"email":"test1@example.com","password":"pass1","secondary_email":"backup1@example.com","description":"账号1"},
-      {"email":"test2@example.com","password":"pass2","secondary_email":"backup2@example.com","description":"账号2"}
+      {"email":"test1@example.com","password":"pass1","secondary_email":"backup1@example.com","secondary_email_url":"https://example.com/shared/aaa111","description":"账号1"},
+      {"email":"test2@example.com","password":"pass2","secondary_email":"backup2@example.com","secondary_email_url":"https://example.com/shared/bbb222","description":"账号2"}
     ]
   }'
 ```
@@ -143,7 +143,7 @@ curl -X POST https://email-cf-d1.pages.dev/api/upload \
 curl -X POST https://email-cf-d1.pages.dev/api/upload \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"email":"single@example.com","password":"pass","secondary_email":"backup@example.com","description":"单个"}'
+  -d '{"email":"single@example.com","password":"pass","secondary_email":"backup@example.com","secondary_email_url":"https://example.com/shared/abcd1234","description":"单个"}'
 ```
 
 ### 测试结果

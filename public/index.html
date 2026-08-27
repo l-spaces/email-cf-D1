@@ -80,6 +80,7 @@
               <col class="col-account">
               <col class="col-password">
               <col class="col-secondary">
+              <col class="col-secondary-url">
               <col class="col-note">
               <col class="col-date">
               <col class="col-actions">
@@ -89,6 +90,7 @@
                 <th scope="col">邮箱账号</th>
                 <th scope="col">密码</th>
                 <th scope="col">辅助邮箱</th>
+                <th scope="col">辅助邮箱链接</th>
                 <th scope="col">备注</th>
                 <th scope="col">创建时间</th>
                 <th scope="col" class="actions-heading"><span class="sr-only">操作</span></th>
@@ -96,7 +98,7 @@
             </thead>
             <tbody id="emailTableBody">
               <tr class="status-row">
-                <td colspan="6">
+                <td colspan="7">
                   <div class="loading-state" role="status">
                     <span class="spinner" aria-hidden="true"></span>
                     <span>正在加载账号</span>
@@ -204,6 +206,24 @@
                 name="secondaryEmail"
                 placeholder="备用或恢复邮箱"
                 maxlength="254"
+                autocomplete="off"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="secondaryEmailUrl">辅助邮箱链接</label>
+              <span>选填</span>
+            </div>
+            <div class="input-control">
+              <i data-lucide="link" aria-hidden="true"></i>
+              <input
+                type="url"
+                id="secondaryEmailUrl"
+                name="secondaryEmailUrl"
+                placeholder="https://example.com/shared/xxxx"
+                maxlength="2048"
                 autocomplete="off"
               >
             </div>
