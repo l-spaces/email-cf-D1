@@ -294,12 +294,13 @@ function renderSecondaryUrlCell(rawUrl) {
   }
 
   const isSafeLink = /^https?:\/\//i.test(rawUrl);
+  const title = escapeAttribute(rawUrl);
 
   if (isSafeLink) {
-    return `<a class="secondary-url-text secondary-url-link" href="${escapeAttribute(rawUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(rawUrl)}</a>`;
+    return `<a class="secondary-url-text secondary-url-link" href="${title}" target="_blank" rel="noopener noreferrer" title="${title}">${escapeHtml(rawUrl)}</a>`;
   }
 
-  return `<span class="secondary-url-text">${escapeHtml(rawUrl)}</span>`;
+  return `<span class="secondary-url-text" title="${title}">${escapeHtml(rawUrl)}</span>`;
 }
 
 function renderLoadingState() {

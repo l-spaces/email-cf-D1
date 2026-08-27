@@ -665,14 +665,13 @@ tbody tr.account-row:hover {
 }
 
 .secondary-url-text {
-  display: -webkit-box;
+  display: block;
   overflow: hidden;
   color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.45;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .secondary-url-text.is-empty {
